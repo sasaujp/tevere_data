@@ -1,0 +1,12 @@
+[package]
+name = "tevere_data"
+version = "0.1.0"
+authors = ["Fumiya Kubota <ssuwam@gmail.com>"]
+edition = "2021"
+
+[dependencies]
+argopt = "0.3.0"
+reqwest = { version = "0.11.22", features = ["blocking"] }
+strum = "0.25.0"
+strum_macros = "0.25.3"
+urlencoding = "2.1.3"
