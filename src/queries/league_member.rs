@@ -13,8 +13,8 @@ pub enum LeagueMemberQuery {
     Unknown,
 }
 
-pub fn gen_league_member_query(war_query: LeagueMemberQuery) -> String {
-    let result = match war_query {
+pub fn gen_league_member_query(league_member_query: LeagueMemberQuery) -> String {
+    let result = match league_member_query {
         LeagueMemberQuery::Label => {
             format!(
                 "SELECT DISTINCT ?leagueMember ?label ?language WHERE {{

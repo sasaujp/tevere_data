@@ -39,8 +39,9 @@ pub static LEAGUE_QUERY: &str = "
         ?state wdt:P31 wd:Q148837 .
     }
 ";
-pub fn gen_league_query(war_query: LeagueQuery) -> String {
-    let result = match war_query {
+
+pub fn gen_league_query(league_query: LeagueQuery) -> String {
+    let result = match league_query {
         LeagueQuery::Label => {
             format!(
                 "SELECT DISTINCT ?league ?label ?language WHERE {{
@@ -106,6 +107,7 @@ pub fn gen_league_query(war_query: LeagueQuery) -> String {
     result
 }
 
+#[cfg(test)]
 mod tests {
     use super::*;
     use strum::IntoEnumIterator;
