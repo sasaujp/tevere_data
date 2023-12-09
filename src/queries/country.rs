@@ -18,7 +18,7 @@ pub enum CountryQuery {
     Unknown,
 }
 
-static COUNTRY_QUERY: &str = "
+pub static COUNTRY_QUERY: &str = "
 {
 ?country wdt:P31 wd:Q6256 .
 } UNION {
