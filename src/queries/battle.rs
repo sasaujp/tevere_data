@@ -2,15 +2,15 @@ use strum_macros::{Display, EnumIter, EnumString};
 
 #[derive(Debug, PartialEq, EnumString, Display, EnumIter, Clone, Copy, Default)]
 pub enum BattleQuery {
-    #[strum(serialize = "Label")]
+    #[strum(serialize = "label")]
     Label,
-    #[strum(serialize = "Coordinates")]
+    #[strum(serialize = "coordinates")]
     Coordinates,
-    #[strum(serialize = "PartOf")]
+    #[strum(serialize = "partOf")]
     PartOf,
-    #[strum(serialize = "Person")]
+    #[strum(serialize = "person")]
     Person,
-    #[strum(serialize = "Country")]
+    #[strum(serialize = "country")]
     Country,
     #[default]
     Unknown,

@@ -2,17 +2,17 @@ use strum_macros::{Display, EnumIter, EnumString};
 
 #[derive(Debug, PartialEq, EnumString, Display, EnumIter, Clone, Copy, Default)]
 pub enum StateQuery {
-    #[strum(serialize = "Inception")]
+    #[strum(serialize = "inception")]
     Inception,
-    #[strum(serialize = "Dissolution")]
+    #[strum(serialize = "dissolution")]
     Dissolution,
-    #[strum(serialize = "Coordinates")]
+    #[strum(serialize = "coordinates")]
     Coordinates,
-    #[strum(serialize = "Label")]
+    #[strum(serialize = "label")]
     Label,
-    #[strum(serialize = "Flag")]
+    #[strum(serialize = "flag")]
     Flag,
-    #[strum(serialize = "Capital")]
+    #[strum(serialize = "capital")]
     Capital,
     #[default]
     Unknown,

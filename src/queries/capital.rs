@@ -4,9 +4,9 @@ use crate::queries::country::COUNTRY_QUERY;
 
 #[derive(Debug, PartialEq, EnumString, Display, EnumIter, Clone, Copy, Default)]
 pub enum CapitalQuery {
-    #[strum(serialize = "Label")]
+    #[strum(serialize = "label")]
     Label,
-    #[strum(serialize = "Coordinates")]
+    #[strum(serialize = "coordinates")]
     Coordinates,
     #[default]
     Unknown,

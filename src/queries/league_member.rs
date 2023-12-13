@@ -2,11 +2,11 @@ use crate::queries::league::LEAGUE_QUERY;
 use strum_macros::{Display, EnumIter, EnumString};
 #[derive(Debug, PartialEq, EnumString, Display, EnumIter, Clone, Copy, Default)]
 pub enum LeagueMemberQuery {
-    #[strum(serialize = "Label")]
+    #[strum(serialize = "label")]
     Label,
-    #[strum(serialize = "Coordinates")]
+    #[strum(serialize = "coordinates")]
     Coordinates,
-    #[strum(serialize = "Flag")]
+    #[strum(serialize = "flag")]
     Flag,
 
     #[default]

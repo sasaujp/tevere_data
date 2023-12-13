@@ -13,17 +13,23 @@ use strum_macros::{Display, EnumIter, EnumString};
 
 #[derive(Debug, PartialEq, EnumString, Display, EnumIter)]
 pub enum QueryTypes {
-    #[strum(serialize = "Country")]
+    #[strum(serialize = "country")]
     Country(CountryQuery),
+    #[strum(serialize = "capital")]
     Capital(CapitalQuery),
+    #[strum(serialize = "war")]
     War(WarQuery),
+    #[strum(serialize = "battle")]
     Battle(BattleQuery),
+    #[strum(serialize = "state")]
     State(StateQuery),
+    #[strum(serialize = "league")]
     League(LeagueQuery),
+    #[strum(serialize = "league_member")]
     LeagueMember(LeagueMemberQuery),
 }
 
-pub fn get_query_type(category: String, target: String) -> Result<QueryTypes, ParseError> {
+pub fn get_query_type(category: &str, target: &str) -> Result<QueryTypes, ParseError> {
     let query_type = QueryTypes::from_str(&category);
     match query_type {
         Ok(QueryTypes::Country(_)) => {
@@ -97,25 +103,25 @@ mod tests {
 
     #[test]
     fn test_get_query() {
-        let query = get_query_type("Country".to_string(), "Inception".to_string());
+        let query = get_query_type("Country", "Inception");
         assert_eq!(query, Ok(QueryTypes::Country(CountryQuery::Inception)));
 
-        let query = get_query_type("Country".to_string(), "Dissolution".to_string());
+        let query = get_query_type("Country", "Dissolution");
         assert_eq!(query, Ok(QueryTypes::Country(CountryQuery::Dissolution)));
 
-        let query = get_query_type("hoge".to_string(), "hoge".to_string());
+        let query = get_query_type("hoge", "hoge");
         assert_eq!(query, Err(ParseError::VariantNotFound));
 
-        let query = get_query_type("Country".to_string(), "hoge".to_string());
+        let query = get_query_type("Country", "hoge");
         assert_eq!(query, Err(ParseError::VariantNotFound));
 
-        let query = get_query_type("State".to_string(), "hoge".to_string());
+        let query = get_query_type("State", "hoge");
         assert_eq!(query, Err(ParseError::VariantNotFound));
 
-        let query = get_query_type("League".to_string(), "hoge".to_string());
+        let query = get_query_type("League", "hoge");
         assert_eq!(query, Err(ParseError::VariantNotFound));
 
-        let query = get_query_type("League".to_string(), "hoge".to_string());
+        let query = get_query_type("League", "hoge");
         assert_eq!(query, Err(ParseError::VariantNotFound));
     }
 }

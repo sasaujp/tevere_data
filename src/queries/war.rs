@@ -2,17 +2,17 @@ use strum_macros::{Display, EnumIter, EnumString};
 
 #[derive(Debug, PartialEq, EnumString, Display, EnumIter, Clone, Copy, Default)]
 pub enum WarQuery {
-    #[strum(serialize = "Label")]
+    #[strum(serialize = "label")]
     Label,
-    #[strum(serialize = "Coordinates")]
+    #[strum(serialize = "coordinates")]
     Coordinates,
-    #[strum(serialize = "Person")]
+    #[strum(serialize = "person")]
     Person,
-    #[strum(serialize = "StartDate")]
+    #[strum(serialize = "startDate")]
     StartDate,
-    #[strum(serialize = "EndDate")]
+    #[strum(serialize = "endDate")]
     EndDate,
-    #[strum(serialize = "Country")]
+    #[strum(serialize = "country")]
     Country,
     #[default]
     Unknown,
@@ -38,8 +38,7 @@ pub fn gen_war_query(war_query: WarQuery) -> String {
             format!(
                 "SELECT DISTINCT ?capital ?coordinates WHERE {{
                     {}
-                    ?country wdt:P36 ?capital .
-                    ?capital wdt:P625 ?coordinates .
+                    ?war wdt:P625 ?coordinates .
                 }}",
                 WAR_QUERY
             )

@@ -2,15 +2,15 @@ use strum_macros::{Display, EnumIter, EnumString};
 
 #[derive(Debug, PartialEq, EnumString, Display, EnumIter, Clone, Copy, Default)]
 pub enum LeagueQuery {
-    #[strum(serialize = "Inception")]
+    #[strum(serialize = "inception")]
     Inception,
-    #[strum(serialize = "Dissolution")]
+    #[strum(serialize = "dissolution")]
     Dissolution,
-    #[strum(serialize = "Label")]
+    #[strum(serialize = "label")]
     Label,
-    #[strum(serialize = "State")]
+    #[strum(serialize = "state")]
     State,
-    #[strum(serialize = "Flag")]
+    #[strum(serialize = "flag")]
     Flag,
     #[default]
     Unknown,
