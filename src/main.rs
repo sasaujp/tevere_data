@@ -31,12 +31,11 @@ fn fetch(category: &str, target: &str, data_dir: &str) {
         encode(&sparql)
     );
 
-    let directory = format!("{}/{}", data_dir, category);
+    let directory = format!("{}/sparql/{}", data_dir, category);
     let mut path = PathBuf::from(directory);
     fs::create_dir_all(&path).unwrap();
     path.push(format!("{}.json", target));
 
-    println!("{}", data_dir);
     let client = Client::builder().user_agent("Reqwest").build().unwrap();
     let result = client.get(url).send().unwrap();
     let value = result.json::<SparqlResponse>();
