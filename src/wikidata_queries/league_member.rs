@@ -1,4 +1,4 @@
-use crate::queries::league::LEAGUE_QUERY;
+use crate::wikidata_queries::league::LEAGUE_QUERY;
 use strum_macros::{Display, EnumIter, EnumString};
 #[derive(Debug, PartialEq, EnumString, Display, EnumIter, Clone, Copy, Default)]
 pub enum LeagueMemberQuery {

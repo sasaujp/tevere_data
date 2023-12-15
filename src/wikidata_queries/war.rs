@@ -1,6 +1,6 @@
 use strum_macros::{Display, EnumIter, EnumString};
 
-use crate::queries::country::COUNTRY_QUERY;
+use crate::wikidata_queries::country::COUNTRY_QUERY;
 
 #[derive(Debug, PartialEq, EnumString, Display, EnumIter, Clone, Copy, Default)]
 pub enum WarQuery {

@@ -1,11 +1,10 @@
-mod queries;
-use crate::queries::{
+mod wikidata_queries;
+use crate::wikidata_queries::{
     battle::BattleQuery, capital::CapitalQuery, country::CountryQuery, league::LeagueQuery,
     league_member::LeagueMemberQuery, sparql_types::SparqlResponse, state::StateQuery,
     war::WarQuery,
 };
 use argopt::{cmd_group, subcmd};
-use queries::get_query::QueryTypes;
 use reqwest::blocking::Client;
 use serde_json;
 use serde_json::{json, Value};
@@ -16,13 +15,14 @@ use std::time::Duration;
 use std::{fs, path::PathBuf};
 use strum::IntoEnumIterator;
 use urlencoding::encode;
+use wikidata_queries::get_query::QueryTypes;
 
 const WIKIDATA_ENDPOINT: &str = "https://query.wikidata.org/sparql";
 
 fn fetch(category: &str, target: &str, data_dir: &str) {
-    let query_type = queries::get_query::get_query_type(&category, &target);
+    let query_type = wikidata_queries::get_query::get_query_type(&category, &target);
     let sparql = match query_type {
-        Ok(query) => queries::get_query::gen_query(query),
+        Ok(query) => wikidata_queries::get_query::gen_query(query),
         Err(_) => {
             println!("Invalid query type.");
             return; // Add this line to return early from the function
@@ -55,7 +55,7 @@ fn fetch(category: &str, target: &str, data_dir: &str) {
 }
 
 #[subcmd]
-fn get(
+fn wikidata_get(
     category: String,
     target: String,
     #[opt(short = 'o', long = "output", default_value = "data")] output: String,
@@ -68,7 +68,7 @@ fn sleep() {
 }
 
 #[subcmd]
-fn get_all(#[opt(short = 'o', long = "output", default_value = "data")] output: String) {
+fn wikidata_get_all(#[opt(short = 'o', long = "output", default_value = "data")] output: String) {
     for query_type in QueryTypes::iter() {
         match query_type {
             QueryTypes::Country(_) => {
@@ -172,7 +172,6 @@ fn merge(
                                         if !object["capital"].is_object() {
                                             object["capital"] = json!({});
                                         }
-
                                         let start_time = &binding.get("startTime");
                                         let end_time = &binding.get("endTime");
                                         let point_in_time = &binding.get("pointInTime");
@@ -190,8 +189,6 @@ fn merge(
                                             _ => {}
                                         }
                                         object["capital"][&capital.value] = capital_entry;
-                                        // entry.push(capital_entry);
-                                        // println!("{}", binding[&keys[0]].value);
                                         return;
                                     }
                                     _ => {}
@@ -220,7 +217,6 @@ fn merge(
 
                                     if let Some(Value::Array(entry)) = object.get_mut(&keys[0]) {
                                         entry.push(json!(binding[&keys[0]].value));
-                                        // println!("{}", binding[&keys[0]].value);
                                     }
                                     return;
                                 }
@@ -243,6 +239,6 @@ fn merge(
     fs::write(output_path, json).expect("Unable to write file");
 }
 
-#[cmd_group(commands = [get, get_all, merge])]
+#[cmd_group(commands = [wikidata_get, wikidata_get_all, merge])]
 #[opt(author, version, about, long_about = None)]
 fn main() {}
