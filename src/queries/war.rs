@@ -1,5 +1,7 @@
 use strum_macros::{Display, EnumIter, EnumString};
 
+use crate::queries::country::COUNTRY_QUERY;
+
 #[derive(Debug, PartialEq, EnumString, Display, EnumIter, Clone, Copy, Default)]
 pub enum WarQuery {
     #[strum(serialize = "label")]
@@ -14,6 +16,8 @@ pub enum WarQuery {
     EndDate,
     #[strum(serialize = "country")]
     Country,
+    #[strum(serialize = "image")]
+    Image,
     #[default]
     Unknown,
 }
@@ -36,7 +40,7 @@ pub fn gen_war_query(war_query: WarQuery) -> String {
         }
         WarQuery::Coordinates => {
             format!(
-                "SELECT DISTINCT ?capital ?coordinates WHERE {{
+                "SELECT DISTINCT ?war ?coordinates WHERE {{
                     {}
                     ?war wdt:P625 ?coordinates .
                 }}",
@@ -76,7 +80,16 @@ pub fn gen_war_query(war_query: WarQuery) -> String {
                 "SELECT DISTINCT ?war ?country WHERE {{
                     {}
                     ?war wdt:P710 ?country .
-                    ?country wdt:P31 wd:Q5 .
+                    {}
+                }}",
+                WAR_QUERY, COUNTRY_QUERY
+            )
+        }
+        WarQuery::Image => {
+            format!(
+                "SELECT DISTINCT ?war ?image WHERE {{
+                    {}
+                    ?war wdt:P18 ?image .
                 }}",
                 WAR_QUERY
             )

@@ -8,6 +8,9 @@ use argopt::{cmd_group, subcmd};
 use queries::get_query::QueryTypes;
 use reqwest::blocking::Client;
 use serde_json;
+use serde_json::{json, Value};
+use std::fs::File;
+use std::io::BufReader;
 use std::thread;
 use std::time::Duration;
 use std::{fs, path::PathBuf};
@@ -135,6 +138,111 @@ fn get_all(#[opt(short = 'o', long = "output", default_value = "data")] output: 
     }
 }
 
-#[cmd_group(commands = [get, get_all])]
+#[subcmd]
+fn merge(
+    category: String,
+    #[opt(short = 'o', long = "output", default_value = "data")] output: String,
+) {
+    let directory = format!("{}/sparql/{}", output, category);
+    let base_path = PathBuf::from(directory);
+
+    let mut result = Value::Object(Default::default());
+    match fs::read_dir(base_path) {
+        Ok(entries) => {
+            for entry in entries {
+                match entry {
+                    Ok(entry) => {
+                        let path = entry.path();
+                        if !path.is_file() {
+                            continue;
+                        }
+
+                        let file = File::open(path).unwrap();
+                        let reader = BufReader::new(file);
+                        let raw_data: SparqlResponse = serde_json::from_reader(reader).unwrap();
+                        raw_data.results.bindings.iter().for_each(|binding| {
+                            let entity = &binding[&category];
+                            if result.get(&entity.value).is_none() {
+                                result[&entity.value] = json!({});
+                            }
+                            if let Some(object) = result.get_mut(&entity.value) {
+                                let capital = &binding.get("capital");
+                                match capital {
+                                    Some(capital) => {
+                                        if !object["capital"].is_object() {
+                                            object["capital"] = json!({});
+                                        }
+
+                                        let start_time = &binding.get("startTime");
+                                        let end_time = &binding.get("endTime");
+                                        let point_in_time = &binding.get("pointInTime");
+                                        let mut capital_entry = json!({});
+                                        match (start_time, end_time, point_in_time) {
+                                            (Some(start_time), Some(end_time), _) => {
+                                                capital_entry["start_time"] =
+                                                    json!(start_time.value);
+                                                capital_entry["end_time"] = json!(end_time.value);
+                                            }
+                                            (_, _, Some(point_in_time)) => {
+                                                capital_entry["point_in_time"] =
+                                                    json!(point_in_time.value);
+                                            }
+                                            _ => {}
+                                        }
+                                        object["capital"][&capital.value] = capital_entry;
+                                        // entry.push(capital_entry);
+                                        // println!("{}", binding[&keys[0]].value);
+                                        return;
+                                    }
+                                    _ => {}
+                                }
+                                let label = &binding.get("label");
+                                let language = &binding.get("language");
+                                match (label, language) {
+                                    (Some(label), Some(language)) => {
+                                        if !object["label"].is_object() {
+                                            object["label"] = json!({});
+                                        }
+                                        object["label"][&language.value] = json!(label.value);
+                                        return;
+                                    }
+                                    _ => {}
+                                }
+                                let keys: Vec<_> = binding
+                                    .keys()
+                                    .filter(|&key| key != &category)
+                                    .cloned()
+                                    .collect();
+                                if keys.len() == 1 {
+                                    if !object[&keys[0]].is_array() {
+                                        object[&keys[0]] = json!([]);
+                                    }
+
+                                    if let Some(Value::Array(entry)) = object.get_mut(&keys[0]) {
+                                        entry.push(json!(binding[&keys[0]].value));
+                                        // println!("{}", binding[&keys[0]].value);
+                                    }
+                                    return;
+                                }
+                            }
+                        });
+                    }
+                    Err(e) => println!("エラー: {}", e),
+                }
+            }
+        }
+        Err(e) => println!("ディレクトリ読み込みエラー: {}", e),
+    };
+    let output_directory = PathBuf::from(format!("{}/result", output));
+    let output_path = PathBuf::from(format!("{}/result/{}.json", output, category));
+
+    fs::create_dir_all(&output_directory).unwrap();
+
+    let json = serde_json::to_string_pretty(&result).unwrap();
+
+    fs::write(output_path, json).expect("Unable to write file");
+}
+
+#[cmd_group(commands = [get, get_all, merge])]
 #[opt(author, version, about, long_about = None)]
 fn main() {}

@@ -3,23 +3,23 @@ use std::collections::HashMap;
 
 #[derive(Serialize, Deserialize, Debug)]
 pub struct SparqlResponse {
-    head: Head,
-    results: Results,
+    pub head: Head,
+    pub results: Results,
 }
 
 #[derive(Serialize, Deserialize, Debug)]
 pub struct Head {
-    vars: Vec<String>,
+    pub vars: Vec<String>,
 }
 
 #[derive(Serialize, Deserialize, Debug)]
 pub struct Results {
-    bindings: Vec<HashMap<String, Object>>,
+    pub bindings: Vec<HashMap<String, Object>>,
 }
 
 #[derive(Serialize, Deserialize, Debug)]
 pub struct Object {
-    r#type: String,
-    datatype: Option<String>,
-    value: String,
+    pub r#type: String,
+    pub datatype: Option<String>,
+    pub value: String,
 }

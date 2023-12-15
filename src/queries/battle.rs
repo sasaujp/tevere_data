@@ -1,5 +1,7 @@
 use strum_macros::{Display, EnumIter, EnumString};
 
+use crate::queries::country::COUNTRY_QUERY;
+
 #[derive(Debug, PartialEq, EnumString, Display, EnumIter, Clone, Copy, Default)]
 pub enum BattleQuery {
     #[strum(serialize = "label")]
@@ -12,6 +14,10 @@ pub enum BattleQuery {
     Person,
     #[strum(serialize = "country")]
     Country,
+    #[strum(serialize = "pointInTime")]
+    PointInTime,
+    #[strum(serialize = "image")]
+    Image,
     #[default]
     Unknown,
 }
@@ -67,9 +73,28 @@ pub fn gen_battle_query(battle_query: BattleQuery) -> String {
                     ?battle wdt:P710 ?country .
                     {}
                 }}",
-                BATTLE_QUERY, BATTLE_QUERY
+                BATTLE_QUERY, COUNTRY_QUERY
             )
         }
+        BattleQuery::PointInTime => {
+            format!(
+                "SELECT DISTINCT ?battle ?pointInTime WHERE {{
+                    {}
+                    ?battle wdt:P585 ?pointInTime .
+                }}",
+                BATTLE_QUERY
+            )
+        }
+        BattleQuery::Image => {
+            format!(
+                "SELECT DISTINCT ?battle ?image WHERE {{
+                    {}
+                    ?battle wdt:P18 ?image .
+                }}",
+                BATTLE_QUERY
+            )
+        }
+
         BattleQuery::Unknown => "Unknown".to_string(),
     };
     return result;

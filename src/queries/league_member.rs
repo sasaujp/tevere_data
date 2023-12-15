@@ -17,10 +17,10 @@ pub fn gen_league_member_query(league_member_query: LeagueMemberQuery) -> String
     let result = match league_member_query {
         LeagueMemberQuery::Label => {
             format!(
-                "SELECT DISTINCT ?leagueMember ?label ?language WHERE {{
+                "SELECT DISTINCT ?league_member ?label ?language WHERE {{
                     {}
-                    BIND (?state AS ?leagueMember)
-                    ?leagueMember rdfs:label ?label .
+                    BIND (?state AS ?league_member)
+                    ?league_member rdfs:label ?label .
                     BIND (LANG(?label) AS ?language)
                 }}
                 ",
@@ -29,10 +29,10 @@ pub fn gen_league_member_query(league_member_query: LeagueMemberQuery) -> String
         }
         LeagueMemberQuery::Coordinates => {
             format!(
-                "SELECT DISTINCT ?leagueMember ?coordinates WHERE {{
+                "SELECT DISTINCT ?league_member ?coordinates WHERE {{
                     {}
-                    BIND (?state AS ?leagueMember)
-                    ?leagueMember wdt:P625 ?coordinates .
+                    BIND (?state AS ?league_member)
+                    ?league_member wdt:P625 ?coordinates .
                 }}
                 ",
                 LEAGUE_QUERY
@@ -40,10 +40,10 @@ pub fn gen_league_member_query(league_member_query: LeagueMemberQuery) -> String
         }
         LeagueMemberQuery::Flag => {
             format!(
-                "SELECT DISTINCT ?leagueMember ?flag WHERE {{
+                "SELECT DISTINCT ?league_member ?flag WHERE {{
                     {}
-                    BIND (?state AS ?leagueMember)
-                    ?leagueMember wdt:P41 ?flag .
+                    BIND (?state AS ?league_member)
+                    ?league_member wdt:P41 ?flag .
                 }}
                 ",
                 LEAGUE_QUERY
