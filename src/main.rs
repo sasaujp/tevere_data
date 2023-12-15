@@ -1,3 +1,4 @@
+mod dbpedia_queries;
 mod wikidata_queries;
 use crate::wikidata_queries::{
     battle::BattleQuery, capital::CapitalQuery, country::CountryQuery, league::LeagueQuery,
@@ -17,24 +18,43 @@ use strum::IntoEnumIterator;
 use urlencoding::encode;
 use wikidata_queries::get_query::QueryTypes;
 
-const WIKIDATA_ENDPOINT: &str = "https://query.wikidata.org/sparql";
+enum SparqlEndpoint {
+    DBPEDIA,
+    WIKIDATA,
+}
 
-fn fetch(category: &str, target: &str, data_dir: &str) {
-    let query_type = wikidata_queries::get_query::get_query_type(&category, &target);
-    let sparql = match query_type {
-        Ok(query) => wikidata_queries::get_query::gen_query(query),
-        Err(_) => {
-            println!("Invalid query type.");
-            return; // Add this line to return early from the function
+fn fetch(category: &str, target: &str, data_dir: &str, endpoint: SparqlEndpoint) {
+    let sparql = match endpoint {
+        SparqlEndpoint::DBPEDIA => {
+            let query_type = dbpedia_queries::get_query::get_query_type(&category, &target);
+            match query_type {
+                Ok(query) => dbpedia_queries::get_query::gen_query(query),
+                Err(_) => {
+                    println!("Invalid query type.");
+                    return; // Add this line to return early from the function
+                }
+            }
+        }
+        SparqlEndpoint::WIKIDATA => {
+            let query_type = wikidata_queries::get_query::get_query_type(&category, &target);
+            match query_type {
+                Ok(query) => wikidata_queries::get_query::gen_query(query),
+                Err(_) => {
+                    println!("Invalid query type.");
+                    return; // Add this line to return early from the function
+                }
+            }
         }
     };
-    let url = format!(
-        "{}?query={}&format=json",
-        WIKIDATA_ENDPOINT,
-        encode(&sparql)
-    );
 
-    let directory = format!("{}/sparql/{}", data_dir, category);
+    let (endpoint_name, endpoint_uri) = match endpoint {
+        SparqlEndpoint::DBPEDIA => ("dbpedia", "https://dbpedia.org/sparql"),
+        SparqlEndpoint::WIKIDATA => ("wikidata", "https://query.wikidata.org/sparql"),
+    };
+
+    let url = format!("{}?query={}&format=json", endpoint_uri, encode(&sparql));
+
+    let directory = format!("{}/sparql/{}/{}", data_dir, endpoint_name, category);
     let mut path = PathBuf::from(directory);
     fs::create_dir_all(&path).unwrap();
     path.push(format!("{}.json", target));
@@ -55,12 +75,21 @@ fn fetch(category: &str, target: &str, data_dir: &str) {
 }
 
 #[subcmd]
+fn dbpedia_get(
+    category: String,
+    target: String,
+    #[opt(short = 'o', long = "output", default_value = "data")] output: String,
+) {
+    fetch(&category, &target, &output, SparqlEndpoint::DBPEDIA);
+}
+
+#[subcmd]
 fn wikidata_get(
     category: String,
     target: String,
     #[opt(short = 'o', long = "output", default_value = "data")] output: String,
 ) {
-    fetch(&category, &target, &output);
+    fetch(&category, &target, &output, SparqlEndpoint::WIKIDATA);
 }
 
 fn sleep() {
@@ -77,7 +106,12 @@ fn wikidata_get_all(#[opt(short = 'o', long = "output", default_value = "data")]
                         continue;
                     }
                     println!("{} -> {}", query_type.to_string(), variant.to_string());
-                    fetch(&query_type.to_string(), &variant.to_string(), &output);
+                    fetch(
+                        &query_type.to_string(),
+                        &variant.to_string(),
+                        &output,
+                        SparqlEndpoint::WIKIDATA,
+                    );
                 }
             }
             QueryTypes::Capital(_) => {
@@ -86,7 +120,12 @@ fn wikidata_get_all(#[opt(short = 'o', long = "output", default_value = "data")]
                         continue;
                     }
                     println!("{} -> {}", query_type.to_string(), variant.to_string());
-                    fetch(&query_type.to_string(), &variant.to_string(), &output);
+                    fetch(
+                        &query_type.to_string(),
+                        &variant.to_string(),
+                        &output,
+                        SparqlEndpoint::WIKIDATA,
+                    );
                 }
             }
             QueryTypes::War(_) => {
@@ -95,7 +134,12 @@ fn wikidata_get_all(#[opt(short = 'o', long = "output", default_value = "data")]
                         continue;
                     }
                     println!("{} -> {}", query_type.to_string(), variant.to_string());
-                    fetch(&query_type.to_string(), &variant.to_string(), &output);
+                    fetch(
+                        &query_type.to_string(),
+                        &variant.to_string(),
+                        &output,
+                        SparqlEndpoint::WIKIDATA,
+                    );
                 }
             }
             QueryTypes::Battle(_) => {
@@ -104,7 +148,12 @@ fn wikidata_get_all(#[opt(short = 'o', long = "output", default_value = "data")]
                         continue;
                     }
                     println!("{} -> {}", query_type.to_string(), variant.to_string());
-                    fetch(&query_type.to_string(), &variant.to_string(), &output);
+                    fetch(
+                        &query_type.to_string(),
+                        &variant.to_string(),
+                        &output,
+                        SparqlEndpoint::WIKIDATA,
+                    );
                 }
             }
             QueryTypes::State(_) => {
@@ -113,7 +162,12 @@ fn wikidata_get_all(#[opt(short = 'o', long = "output", default_value = "data")]
                         continue;
                     }
                     println!("{} -> {}", query_type.to_string(), variant.to_string());
-                    fetch(&query_type.to_string(), &variant.to_string(), &output);
+                    fetch(
+                        &query_type.to_string(),
+                        &variant.to_string(),
+                        &output,
+                        SparqlEndpoint::WIKIDATA,
+                    );
                 }
             }
             QueryTypes::League(_) => {
@@ -122,7 +176,12 @@ fn wikidata_get_all(#[opt(short = 'o', long = "output", default_value = "data")]
                         continue;
                     }
                     println!("{} -> {}", query_type.to_string(), variant.to_string());
-                    fetch(&query_type.to_string(), &variant.to_string(), &output);
+                    fetch(
+                        &query_type.to_string(),
+                        &variant.to_string(),
+                        &output,
+                        SparqlEndpoint::WIKIDATA,
+                    );
                 }
             }
             QueryTypes::LeagueMember(_) => {
@@ -131,7 +190,12 @@ fn wikidata_get_all(#[opt(short = 'o', long = "output", default_value = "data")]
                         continue;
                     }
                     println!("{} -> {}", query_type.to_string(), variant.to_string());
-                    fetch(&query_type.to_string(), &variant.to_string(), &output);
+                    fetch(
+                        &query_type.to_string(),
+                        &variant.to_string(),
+                        &output,
+                        SparqlEndpoint::WIKIDATA,
+                    );
                 }
             }
         }
@@ -239,6 +303,6 @@ fn merge(
     fs::write(output_path, json).expect("Unable to write file");
 }
 
-#[cmd_group(commands = [wikidata_get, wikidata_get_all, merge])]
+#[cmd_group(commands = [wikidata_get, wikidata_get_all, dbpedia_get, merge])]
 #[opt(author, version, about, long_about = None)]
 fn main() {}

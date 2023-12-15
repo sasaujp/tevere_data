@@ -103,25 +103,25 @@ mod tests {
 
     #[test]
     fn test_get_query() {
-        let query = get_query_type("Country", "Inception");
+        let query = get_query_type("country", "inception");
         assert_eq!(query, Ok(QueryTypes::Country(CountryQuery::Inception)));
 
-        let query = get_query_type("Country", "Dissolution");
+        let query = get_query_type("country", "dissolution");
         assert_eq!(query, Ok(QueryTypes::Country(CountryQuery::Dissolution)));
 
         let query = get_query_type("hoge", "hoge");
         assert_eq!(query, Err(ParseError::VariantNotFound));
 
-        let query = get_query_type("Country", "hoge");
+        let query = get_query_type("country", "hoge");
         assert_eq!(query, Err(ParseError::VariantNotFound));
 
-        let query = get_query_type("State", "hoge");
+        let query = get_query_type("state", "hoge");
         assert_eq!(query, Err(ParseError::VariantNotFound));
 
-        let query = get_query_type("League", "hoge");
+        let query = get_query_type("league", "hoge");
         assert_eq!(query, Err(ParseError::VariantNotFound));
 
-        let query = get_query_type("League", "hoge");
+        let query = get_query_type("league", "hoge");
         assert_eq!(query, Err(ParseError::VariantNotFound));
     }
 }
